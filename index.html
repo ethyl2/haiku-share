@@ -26,6 +26,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="">
     <link rel="manifest" href="">
     <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -38,11 +39,6 @@
         }
       }
     </script>
-    <style>
-      .glide__bullet--active {
-        background: blue !important;
-      }
-    </style>
   </head>
   <body>
     <!--[if lt IE 7]>
@@ -53,8 +49,43 @@
         <h1>Haiku Share</h1>
     </header>
 
-    <main class="w-full mx-auto min-h-screen pt-16 md:pt-44 flex flex-col items-center justify-center font-kalam">
-       
+    <main class="w-full mx-auto min-h-screen pt-16 md:pt-44 flex flex-col items-center justify-start space-y-12 font-kalam">
+       <section>
+          <h2>What is Haiku?</h2>
+       </section>
+
+       <section>
+        <h2>Why share Haiku?</h2>
+      </section>
+
+      <section class="flex flex-col items-center justify-center space-y-6 container mx-auto">
+        <h2>Haiku Examples by Steven Waters</h2>
+        <p class="w-1/2">
+          With you my dear friend<br>
+          Life evermore is countless<br>
+          Always sufficient
+        </p>
+
+        <p class="w-1/2">
+          Some hills are just hard<br>
+          I will need to walk up those<br>
+          See you at the top
+        </p>
+
+        <p class="w-1/2">
+          Living and walking<br>
+          An abundance of futures<br>
+          As vast as the sky
+        </p>
+
+        <div id="first-example">
+          
+        </div>
+      </section>
+
+      <section>
+        <h2>Share Your Haiku</h2>
+      </section>
     </main>
 
     <footer class="bg-gradient-to-b from-black to-gray-700 py-10 text-center text-white font-semibold w-full">
@@ -140,6 +171,55 @@
 
     const currentYearSpan = document.getElementById('current-year')
     currentYearSpan.textContent = new Date().getFullYear()
+
+    
+    const firstExampleDiv = document.getElementById('first-example')
+
+    axios.get('https://api.unsplash.com/photos/random', {
+      params: {
+        content_filter: 'high',
+        client_id: '',
+        topics: 'nature'
+      }
+    })
+      .then(response => {
+        const photoUrl = response.data.urls.full
+        
+        const firstExampleImage = document.createElement('img')
+        firstExampleImage.src = photoUrl
+        firstExampleImage.alt = 'Haiku Example'
+        firstExampleImage.classList.add('w-1/2', 'mx-auto')
+        firstExampleDiv.appendChild(firstExampleImage)
+
+        const attribution = document.createElement('p')
+        attribution.classList.add('pt-2')
+        const photographerLink = response.data.user.links.html
+        const photographerName = response.data.user.name
+        const photographerLinkElement = document.createElement('a')
+        photographerLinkElement.href = photographerLink
+        photographerLinkElement.classList.add('hover:text-orange-400')
+        photographerLinkElement.textContent = photographerName
+        photographerLinkElement.target = '_blank'
+        photographerLinkElement.rel = 'noopener noreferrer'
+        attribution.textContent = 'Photo by '
+        attribution.appendChild(photographerLinkElement)
+        const unsplashText = document.createTextNode(' on ')
+        attribution.appendChild(unsplashText)
+        const unsplashLink = document.createElement('a')
+        unsplashLink.classList.add('hover:text-orange-400')
+        unsplashLink.href = photoUrl
+        unsplashLink.textContent = 'Unsplash'
+        unsplashLink.target = '_blank'
+        unsplashLink.rel = 'noopener noreferrer'
+        attribution.appendChild(unsplashLink)
+        
+        attribution.classList.add('text-xs', 'text-gray-400', 'text-center')
+        firstExampleDiv.appendChild(attribution)
+      })
+      .catch(error => {
+        console.error('Error fetching photo:', error)
+      });
     </script>
+
   </body>
 </html>
